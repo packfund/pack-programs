@@ -16,7 +16,7 @@ solana-verify verify-from-repo https://github.com/packfund/pack-programs \
   --program-id Ex8ffvBE3sTMyUtyytKRCrzbfuVs5ytsNLmvW2BZ8Sgi \
   --library-name pack_binder \
   --commit-hash <commit> \
-  --url https://api.mainnet-beta.solana.com
+  --url https://api.mainnet.solana.com
 ```
 
 The build uses Agave 4.3.0 (`[workspace.metadata.cli]` in `Cargo.toml`) and produces SBPF v3.
