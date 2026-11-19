@@ -1,0 +1,46 @@
+[package]
+name = "pack_binder"
+version = "0.1.0"
+description = "Pack Protocol Binder: a Metaplex Core membership NFT whose mint buys and burns $PACK, with an equal-share pot (ARCHITECTURE section 4, docs/validation/P2-01_BINDER_DESIGN.md)."
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "pack_binder"
+
+[features]
+# no-log-ix-name: no "Instruction: <name>" log line per call (size; nothing reads that line), as pack_bond
+default = ["no-log-ix-name"]
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+# Exact pins. anchor-lang and anchor-spl 1.2.1 use the default `solana-v3` crate cohort (as pack_bond).
+# `event-cpi`: every event that feeds the books is an inner-instruction event (design D17).
+anchor-lang = { version = "=1.2.1", features = ["event-cpi"] }
+anchor-spl = { version = "=1.2.1", default-features = false, features = [
+  "associated_token",
+  "token",
+  "token_2022",
+  "solana-v3",
+] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
+
+[dev-dependencies]
+# P2-10b: the Metaplex Core client crate is NOT linked into the program (core_cpi.rs writes the four calls by hand); the unit tests
+# there build every call with the crate's own builders and assert identical accounts and data. Default features only: its
+# `anchor` feature would pull anchor-lang 0.31 / 0.32. Its solana-program 3.0.0 is the same solana-pubkey 3.0.0 cohort as
+# anchor-lang 1.2.1 (reports/P2-01/dep-probe).
+mpl-core = { version = "=0.12.1" }
+# P2-10b: the unit tests of loader_state.rs serialize `UpgradeableLoaderState` with bincode, as the loader does, and compare the hand parse with anchor-lang's.
+# Already in Cargo.lock (solana-instruction); a dev-dependency only, never linked into the program.
+bincode = "=1.3.3"

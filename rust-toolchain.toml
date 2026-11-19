@@ -1,0 +1,7 @@
+# Host-side Rust toolchain (cargo fmt, cargo clippy, the Anchor IDL build, host tests).
+# The on-chain SBF binary is compiled by `cargo build-sbf` with the platform-tools
+# compiler that ships with Agave 4.3.0 (see Anchor.toml [toolchain]), not with this one.
+[toolchain]
+channel = "1.99.0"
+components = ["clippy", "rustfmt"]
+profile = "minimal"
